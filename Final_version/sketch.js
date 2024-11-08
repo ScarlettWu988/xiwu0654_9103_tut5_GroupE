@@ -385,17 +385,36 @@ function createCircles(params, classes) {
 
 // function for background
 function drawGradient() {
-  // Define the start and end colors of the gradient
-  let topColor = color('#004e76');  // Blue 
-  let bottomColor = color('#0d7faa');  // Light blue shade
+  let topColor = color('#004e76');  // 定义顶部颜色
+  let bottomColor = color('#0d7faa');  // 定义底部颜色
 
-  // Draw the gradient background
-  for (let y = 0; y <= height; y++) {
-    let inter = map(y, 0, height, 0, 1);
-    let c = lerpColor(topColor, bottomColor, inter);
-    stroke(c);
-    line(0, y, width, y);
+  noStroke();  // 禁用描边，以便更平滑地过渡颜色
+
+  loadPixels();  // 准备像素数组操作
+  let noiseScale = 0.1;  // 噪声比例因子，用于调节噪声细节
+  let time = millis() / 1000;  // 使用时间创建动态效果
+
+  for (let y = 0; y < height*4; y++) {
+    for (let x = 0; x < width; x++) {
+      let noiseFactor = noise(x * noiseScale, y * noiseScale, time);
+
+      // 基于噪声因子和垂直位置插值颜色
+      let inter = map(y, 0, height, 0, 1);
+      let baseColor = lerpColor(topColor, bottomColor, inter);
+
+      let r = red(baseColor) + noiseFactor * 100 - 50;  // 根据噪声调整红色通道
+      let g = green(baseColor) + noiseFactor * 100 - 50;  // 根据噪声调整绿色通道
+      let b = blue(baseColor) + noiseFactor * 100 - 50;  // 根据噪声调整蓝色通道
+
+      // 将计算出的颜色值设置到像素数组中
+      let index = (x + y * width) * 4;
+      pixels[index] = constrain(r, 0, 255);
+      pixels[index + 1] = constrain(g, 0, 255);
+      pixels[index + 2] = constrain(b, 0, 255);
+      pixels[index + 3] = 255;  // 完全不透明
+    }
   }
+  updatePixels();  // 更新画布上的像素
 }
 
 // function for structure
