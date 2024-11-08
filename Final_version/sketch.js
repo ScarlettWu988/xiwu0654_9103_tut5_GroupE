@@ -17,14 +17,23 @@ class DotCircle {
     this.baseOuterDiameter = baseOuterDiameter; // Store the base diameter for dynamic adjustments
     this.innerDiameter = innerDiameter;
     this.numCircles = numCircles;
-    this.dotColor = dotColor;
+    this.dotColor = dotColor; // Initial static color
     this.fillColor = fillColor;
-    this.noiseOffset = random(1000);  // Initialize a random noise offset
+    this.noiseOffset = random(1000);  // Initialize a random noise offset for color
+    this.colorNoiseOffset = random(1000);  // Separate offset for color changes
 
     this.diameterStep = (this.baseOuterDiameter - innerDiameter) / (numCircles - 1);
   }
 
   display() {
+    // Update color dynamically using noise
+    let noiseValue = noise(this.colorNoiseOffset);
+    this.dotColor = color(
+      noiseValue * 255, // Red channel
+      (1 - noiseValue) * 255, // Green channel, inverse of red
+      128 + noiseValue * 127 // Blue channel
+    );
+
     // Dynamic adjustment based on noise
     let dynamicOuterDiameter = this.baseOuterDiameter + noise(this.noiseOffset) * 10;  // Adjust outer diameter dynamically
     this.diameterStep = (dynamicOuterDiameter - this.innerDiameter) / (this.numCircles - 1); // Recalculate diameter step
@@ -39,6 +48,7 @@ class DotCircle {
     }
 
     this.noiseOffset += 0.2;  // Update noise offset for continuous dynamic changes
+    this.colorNoiseOffset += 0.2; // Update color noise offset
   }
 
   drawDashedCircle(x, y, diameter, dotSize, lineColor, spacing) {
@@ -61,33 +71,7 @@ class DotCircle {
   }
 }
 
-//   drawDashedCircle(x, y, diameter, dotSize, lineColor, spacing) {
-//    // Set the color of the dots for the dashed line
-//     stroke(lineColor);
-//     noFill(); // Only dots, no fill color for the circle area
 
-//     // Calculate radius and circumference for the current circle
-//     let radius = diameter / 2;
-//     let circumference = TWO_PI * radius;
-
-//     // Determine the number of dots to fit around the circle with spacing
-//     let numDots = floor(circumference / (dotSize + spacing));
-
-//     // Draw each dot in the dashed circle
-//     for (let i = 0; i < numDots; i++) {
-//       // Calculate the angle for each dot's position around the circle
-//       let angle = map(i, 0, numDots, 0, TWO_PI);
-//       // Calculate the X and Y position of each dot based on the angle
-//       let xDot = x + radius * cos(angle);
-//       let yDot = y + radius * sin(angle);
-
-//       fill(lineColor); // Set fill color for the dot
-//       noStroke(); // No outline for individual dots
-//       circle(xDot, yDot, dotSize); // Draw the dot at calculated position
-//     }
-//   }
-// }
-// Class for circles with multiple line
 class LineCircle {
   constructor(x, y, baseRadius, numConcentricCircles, strokeSize, backColor, stokeColor) {
     this.x = x;
@@ -108,7 +92,11 @@ class LineCircle {
     noStroke();
     circle(this.x, this.y, dynamicRadius * 2);
 
-    stroke(this.stokeColor);
+    // 动态计算颜色
+    let r = noise(this.noiseOffset + 1) * 255;
+    let g = noise(this.noiseOffset + 2) * 255;
+    let b = noise(this.noiseOffset + 3) * 255;
+    stroke(color(r, g, b));
     strokeWeight(this.strokeSize);
     noFill();
 
@@ -394,6 +382,7 @@ function drawGradient() {
   let noiseScale = 0.1;  // 噪声比例因子，用于调节噪声细节
   let time = millis() / 1000;  // 使用时间创建动态效果
 
+  // 确保循环覆盖整个画布
   for (let y = 0; y < height*4; y++) {
     for (let x = 0; x < width; x++) {
       let noiseFactor = noise(x * noiseScale, y * noiseScale, time);
@@ -402,11 +391,10 @@ function drawGradient() {
       let inter = map(y, 0, height, 0, 1);
       let baseColor = lerpColor(topColor, bottomColor, inter);
 
-      let r = red(baseColor) + noiseFactor * 100 - 50;  // 根据噪声调整红色通道
-      let g = green(baseColor) + noiseFactor * 100 - 50;  // 根据噪声调整绿色通道
-      let b = blue(baseColor) + noiseFactor * 100 - 50;  // 根据噪声调整蓝色通道
+      let r = red(baseColor) + noiseFactor * 100 - 50;
+      let g = green(baseColor) + noiseFactor * 100 - 50;
+      let b = blue(baseColor) + noiseFactor * 100 - 50;
 
-      // 将计算出的颜色值设置到像素数组中
       let index = (x + y * width) * 4;
       pixels[index] = constrain(r, 0, 255);
       pixels[index + 1] = constrain(g, 0, 255);
@@ -510,14 +498,15 @@ function drawConnection(start, end, distance) {
 
 
 function createEllipse(xPos, yPos, radiusX, radiusY) {
+  
   // 使用frameCount来使噪声值随时间变化，增加动态效果
-  let time = frameCount * 0.1;  // 调整时间缩放来控制变化速度
+  let time = frameCount * 0.2;  // 调整时间缩放来控制变化速度
 
   // 生成基于时间和位置的噪声值，并将其映射到一个更亮的颜色范围
   // 通过乘以0.5并加上0.5，将噪声输出从[0, 1]调整到[0.5, 1]
-  let r = (noise(xPos * 0.05 + time, yPos * 0.05) * 0.7 + 0.3) * 255; // 红色通道
-  let g = (noise(xPos * 0.05, yPos * 0.05 + time) * 0.7 + 0.3) * 255; // 绿色通道
-  let b = (noise(xPos * 0.05 + time * 0.5, yPos * 0.05 + time * 0.5) * 0.7 + 0.3) * 255; // 蓝色通道
+  let r = (noise(xPos * 0.05 + time, yPos * 0.05) * 0.5 + 0.5) * 255; // 红色通道
+  let g = (noise(xPos * 0.05, yPos * 0.05 + time) * 0.5 + 0.5) * 255; // 绿色通道
+  let b = (noise(xPos * 0.05 + time * 0.5, yPos * 0.05 + time * 0.5) * 0.8 + 0.2) * 255; // 蓝色通道
 
   // 使用噪声值来设置填充色
   fill(r, g, b);
