@@ -325,8 +325,9 @@ function setup() {
   createCircles(circleParams, circleClasses);
   
   
-  // Structure to hold points for connecting and generating shapes
-  // connectPoints will draw lines or shapes between specified points
+  
+   
+
   
 }
 
@@ -336,11 +337,11 @@ function draw() {
   for (let i = 0; i < circles.length; i++) {
     circles[i].display();
   }
-  
+  // Structure to hold points for connecting and generating shapes
+  // connectPoints will draw lines or shapes between specified points
   connectPoints(points, 108);
   
-  
-  // Generate and draw random ellipses at the specified points
+   // Generate and draw random ellipses at the specified points
   // The 'generateRandomEllipses' function adds visual interest by placing
   // randomly sized and colored ellipses around the points
   generateRandomEllipses(points);
@@ -484,8 +485,8 @@ function drawConnection(start, end, distance) {
   let radiusX = (distance - 12) / 6;
 
   // Calculate the Y-axis radius using noise function for dynamic "breathing" effect
-  let time = frameCount * 0.05;  // 控制变化的速度
-  let radiusY = 2 + noise(time) * 5;  // 使radiusY在3到8之间动态变化
+  let time = frameCount * 0.1;  // 控制变化的速度
+  let radiusY = 1 + noise(time) * 4;  // 使radiusY在3到8之间动态变化
 
   // Save the current drawing state
   push();
@@ -511,15 +512,16 @@ function createEllipse(xPos, yPos, radiusX, radiusY) {
   // 使用frameCount来使噪声值随时间变化，增加动态效果
   let time = frameCount * 0.1;  // 调整时间缩放来控制变化速度
 
-  // 生成基于时间和位置的噪声值，并将其直接映射到颜色范围内
-  let r = noise(xPos * 0.05 + time, yPos * 0.05) * 255; // 红色通道
-  let g = noise(xPos * 0.05, yPos * 0.05 + time) * 255; // 绿色通道
-  let b = noise(xPos * 0.05 + time * 0.5, yPos * 0.05 + time * 0.5) * 255; // 蓝色通道
+  // 生成基于时间和位置的噪声值，并将其映射到一个更亮的颜色范围
+  // 通过乘以0.5并加上0.5，将噪声输出从[0, 1]调整到[0.5, 1]
+  let r = (noise(xPos * 0.05 + time, yPos * 0.05) * 0.7 + 0.3) * 255; // 红色通道
+  let g = (noise(xPos * 0.05, yPos * 0.05 + time) * 0.7 + 0.3) * 255; // 绿色通道
+  let b = (noise(xPos * 0.05 + time * 0.5, yPos * 0.05 + time * 0.5) * 0.7 + 0.3) * 255; // 蓝色通道
 
   // 使用噪声值来设置填充色
   fill(r, g, b);
   stroke('orange');
-  strokeWeight(2);
+  strokeWeight(0);  // 设置笔触宽度
 
   // 绘制椭圆
   ellipse(xPos, yPos, radiusX * 2, radiusY * 2);
