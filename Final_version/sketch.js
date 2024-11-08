@@ -6,10 +6,9 @@ const points = [
     [422, 484], [489, 423], [540, 440], [462, 337], [376, 316], [500, 300],
     [418, 162], [396, 76], [458, 12], [500, 21], [296, 0], [500, 182],
     [0, 28], [25, -10], [6, 458], [40, 540], [300, 500]
-  ];
+];
 
 // Class for circles with dot
-
 class DotCircle {
   constructor(x, y, baseOuterDiameter, innerDiameter, numCircles, dotColor, fillColor) {
     this.x = x;
@@ -22,7 +21,7 @@ class DotCircle {
     this.noiseOffset = random(1000);  // Initialize a random noise offset for color
     this.colorNoiseOffset = random(1000);  // Separate offset for color changes
 
-    this.diameterStep = (this.baseOuterDiameter - innerDiameter) / (numCircles - 1);
+    this.diameterStep = (this.baseOuterDiameter - this.innerDiameter) / (this.numCircles - 1);
   }
 
   display() {
@@ -35,8 +34,8 @@ class DotCircle {
     );
 
     // Dynamic adjustment based on noise
-    let dynamicOuterDiameter = this.baseOuterDiameter + noise(this.noiseOffset) * 10;  // Adjust outer diameter dynamically
-    this.diameterStep = (dynamicOuterDiameter - this.innerDiameter) / (this.numCircles - 1); // Recalculate diameter step
+    let dynamicOuterDiameter = this.baseOuterDiameter + noise(this.noiseOffset) * 10;
+    this.diameterStep = (dynamicOuterDiameter - this.innerDiameter) / (this.numCircles - 1);
 
     noStroke();
     fill(this.fillColor);
@@ -71,28 +70,27 @@ class DotCircle {
   }
 }
 
-
 class LineCircle {
   constructor(x, y, baseRadius, numConcentricCircles, strokeSize, backColor, stokeColor) {
     this.x = x;
     this.y = y;
-    this.staticBaseRadius = baseRadius; // 存储静态基半径值
+    this.staticBaseRadius = baseRadius; // Store static base radius value
     this.numConcentricCircles = numConcentricCircles;
     this.strokeSize = strokeSize;
     this.backColor = backColor;
     this.stokeColor = stokeColor;
-    this.noiseOffset = random(1000); // 初始化噪声偏移
+    this.noiseOffset = random(1000); // Initialize noise offset
   }
 
   display() {
-    // 使用噪声函数动态计算基半径
-    let dynamicRadius = this.staticBaseRadius + noise(this.noiseOffset) * 10; // 基半径加上一个动态噪声值
+    // Dynamically calculate base radius using noise function
+    let dynamicRadius = this.staticBaseRadius + noise(this.noiseOffset) * 10;
 
     fill(this.backColor);
     noStroke();
     circle(this.x, this.y, dynamicRadius * 2);
 
-    // 动态计算颜色
+    // Dynamically calculate color
     let r = noise(this.noiseOffset + 1) * 255;
     let g = noise(this.noiseOffset + 2) * 255;
     let b = noise(this.noiseOffset + 3) * 255;
@@ -100,17 +98,18 @@ class LineCircle {
     strokeWeight(this.strokeSize);
     noFill();
 
-    // 计算并绘制同心圆
+    // Calculate and draw concentric circles
     let radiusStep = (dynamicRadius - 20) / this.numConcentricCircles;
     for (let i = 0; i < this.numConcentricCircles; i++) {
       let currentRadius = dynamicRadius - i * radiusStep;
       circle(this.x, this.y, currentRadius * 2);
     }
 
-    // 增加噪声偏移，用于下次动画的连续性
+    // Increment noise offset for continuous dynamic changes
     this.noiseOffset += 0.1;
   }
 }
+
 // Class for circles with zigzag line
 class ZigzagCircle {
   constructor(x, y, outerRadius, innerRadius, numLines, fillColor, strokeColor) {
@@ -121,8 +120,6 @@ class ZigzagCircle {
     this.numLines = numLines; // Number of zigzag lines to be drawn
     this.fillColor = fillColor; // Fill color for the outer circle
     this.strokeColor = strokeColor; // Color for the zigzag lines
-    
-    
   }
 
   display() {
@@ -163,8 +160,7 @@ class ZigzagCircle {
       outerPoints.push({ x: xOuter, y: yOuter });
       innerPoints.push({ x: xInner, y: yInner });
     }
-    
-     
+
     // Draw zigzag lines connecting outer and inner points
     stroke(this.strokeColor); // Set color for zigzag lines
     strokeWeight(2); // Set thickness for zigzag lines
@@ -175,10 +171,9 @@ class ZigzagCircle {
       // Connect current outer point to the next inner point for a zigzag pattern
       line(outerPoints[i].x, outerPoints[i].y, innerPoints[nextIndex].x, innerPoints[nextIndex].y);
     }
-
   }
 }
-// Class for smal circles
+// Class for small circles
 class SmallCircle {
   constructor(x, y, strokeWeightValue, strokeColor, fillColor, smallCircleColor) {
     this.x = x;
@@ -312,28 +307,22 @@ function setup() {
   // The 'circleClasses' object maps circle types to their respective class constructors
   createCircles(circleParams, circleClasses);
   
-  
-  
-   
-
-  
 }
 
 function draw() {
-  
   // Loop through the array and call display() on each circle object
   for (let i = 0; i < circles.length; i++) {
     circles[i].display();
   }
+  
   // Structure to hold points for connecting and generating shapes
   // connectPoints will draw lines or shapes between specified points
   connectPoints(points, 108);
   
-   // Generate and draw random ellipses at the specified points
+  // Generate and draw random ellipses at the specified points
   // The 'generateRandomEllipses' function adds visual interest by placing
   // randomly sized and colored ellipses around the points
   generateRandomEllipses(points);
- 
   
   // Draw specific pink arcs between the given points
   drawPinkArc([70, 70], [95, 157]);
@@ -341,7 +330,6 @@ function draw() {
   drawPinkArc([290, 290], [376, 316]);
   drawPinkArc([440, 250], [500, 182]);
   drawPinkArc([100, 480], [183, 500]);
-  
 }
 
 // Function to create circle instances based on given parameters and class mappings
@@ -371,23 +359,23 @@ function createCircles(params, classes) {
   }
 }
 
-// function for background
+// Function for background
 function drawGradient() {
-  let topColor = color('#004e76');  // 定义顶部颜色
-  let bottomColor = color('#0d7faa');  // 定义底部颜色
+  let topColor = color('#004e76');  // Define top color
+  let bottomColor = color('#0d7faa');  // Define bottom color
 
-  noStroke();  // 禁用描边，以便更平滑地过渡颜色
+  noStroke();  // Disable stroke for smoother color transitions
 
-  loadPixels();  // 准备像素数组操作
-  let noiseScale = 0.1;  // 噪声比例因子，用于调节噪声细节
-  let time = millis() / 1000;  // 使用时间创建动态效果
+  loadPixels();  // Prepare pixel array for operation
+  let noiseScale = 0.1;  // Noise scale factor for adjusting noise detail
+  let time = millis() / 1000;  // Use time to create dynamic effects
 
-  // 确保循环覆盖整个画布
+  // Ensure loop covers the entire canvas
   for (let y = 0; y < height*4; y++) {
     for (let x = 0; x < width; x++) {
       let noiseFactor = noise(x * noiseScale, y * noiseScale, time);
 
-      // 基于噪声因子和垂直位置插值颜色
+      // Interpolate color based on noise factor and vertical position
       let inter = map(y, 0, height, 0, 1);
       let baseColor = lerpColor(topColor, bottomColor, inter);
 
@@ -399,21 +387,21 @@ function drawGradient() {
       pixels[index] = constrain(r, 0, 255);
       pixels[index + 1] = constrain(g, 0, 255);
       pixels[index + 2] = constrain(b, 0, 255);
-      pixels[index + 3] = 255;  // 完全不透明
+      pixels[index + 3] = 255;  // Completely opaque
     }
   }
-  updatePixels();  // 更新画布上的像素
+  updatePixels();  // Update pixels on the canvas
 }
 
-// function for structure
+// Function for structure
 
 function generateRandomEllipses(points) {
-  let time = frameCount * 0.1; // 时间变量，用于动态效果
+  let time = frameCount * 0.1; // Time variable for dynamic effects
   for (let i = 0; i < points.length; i++) {
     let x = points[i][0];
     let y = points[i][1];
 
-    // 添加时间因素到噪声输入中
+    // Add time factor to noise input
     let w = map(noise(x * 0.05, y * 0.05, time), 0, 1, 10, 25);
     let h = map(noise(x * 0.05 + 100, y * 0.05 + 100, time + 100), 0, 1, 10, 25);
     let angle = map(noise(x * 0.05 + 200, y * 0.05 + 200, time + 200), 0, 1, -PI / 9, PI / 9);
@@ -474,8 +462,8 @@ function drawConnection(start, end, distance) {
   let radiusX = (distance - 12) / 6;
 
   // Calculate the Y-axis radius using noise function for dynamic "breathing" effect
-  let time = frameCount * 0.1;  // 控制变化的速度
-  let radiusY = 1 + noise(time) * 4;  // 使radiusY在3到8之间动态变化
+  let time = frameCount * 0.1;  // Control change speed
+  let radiusY = 1 + noise(time) * 4;  // Dynamically adjust radiusY between 3 and 8
 
   // Save the current drawing state
   push();
@@ -499,21 +487,21 @@ function drawConnection(start, end, distance) {
 
 function createEllipse(xPos, yPos, radiusX, radiusY) {
   
-  // 使用frameCount来使噪声值随时间变化，增加动态效果
-  let time = frameCount * 0.2;  // 调整时间缩放来控制变化速度
+  // Use frameCount to make noise values vary over time, adding dynamic effects
+  let time = frameCount * 0.2;  // Adjust time scaling to control change speed
 
-  // 生成基于时间和位置的噪声值，并将其映射到一个更亮的颜色范围
-  // 通过乘以0.5并加上0.5，将噪声输出从[0, 1]调整到[0.5, 1]
-  let r = (noise(xPos * 0.05 + time, yPos * 0.05) * 0.5 + 0.5) * 255; // 红色通道
-  let g = (noise(xPos * 0.05, yPos * 0.05 + time) * 0.5 + 0.5) * 255; // 绿色通道
-  let b = (noise(xPos * 0.05 + time * 0.5, yPos * 0.05 + time * 0.5) * 0.8 + 0.2) * 255; // 蓝色通道
+  // Generate noise based on time and position, and map it to a brighter color range
+  // Adjust noise output from [0, 1] to [0.5, 1] by multiplying by 0.5 and adding 0.5
+  let r = (noise(xPos * 0.05 + time, yPos * 0.05) * 0.5 + 0.5) * 255; // Red channel
+  let g = (noise(xPos * 0.05, yPos * 0.05 + time) * 0.5 + 0.5) * 255; // Green channel
+  let b = (noise(xPos * 0.05 + time * 0.5, yPos * 0.05 + time * 0.5) * 0.8 + 0.2) * 255; // Blue channel
 
-  // 使用噪声值来设置填充色
+  // Use noise values to set fill color
   fill(r, g, b);
   stroke('orange');
-  strokeWeight(0);  // 设置笔触宽度
+  strokeWeight(0);  // Set stroke width
 
-  // 绘制椭圆
+  // Draw the ellipse
   ellipse(xPos, yPos, radiusX * 2, radiusY * 2);
 }
 
@@ -524,11 +512,11 @@ function drawPinkArc(start, end) {
   const midY = (start[1] + end[1]) / 2;
   const distance = calculateDistance(...start, ...end);
   
-  // 使用噪声函数动态调整弧线厚度和半径
-  const thickness = map(noise(noiseOffset), 0, 1, 4, 8);  // 厚度在4到8之间变化
-  const arcRadius = map(noise(noiseOffset + 0.5), 0, 1, distance * 0.8, distance * 1.2); // 半径基于距离进行动态调整
+  // Dynamically adjust arc thickness and radius using noise function
+  const thickness = map(noise(noiseOffset), 0, 1, 4, 8);  // Thickness varies between 4 and 8
+  const arcRadius = map(noise(noiseOffset + 0.5), 0, 1, distance * 0.8, distance * 1.2); // Radius dynamically adjusted based on distance
 
-  stroke(255, 28, 90); // 设置弧线颜色为粉红色
+  stroke(255, 28, 90); // Set arc color to pink
   strokeWeight(thickness);
   noFill();
 
@@ -536,9 +524,9 @@ function drawPinkArc(start, end) {
   translate(midX, midY);
   const angle = calculateAngle(...start, ...end);
   rotate(radians(angle));
-  arc(0, 0, arcRadius, arcRadius, PI, TWO_PI);  // 绘制半圆形弧线
+  arc(0, 0, arcRadius, arcRadius, PI, TWO_PI);  // Draw a semicircular arc
   pop();
 
-  // 每帧增加噪声偏移以持续改变弧线的表现
+  // Increment noise offset each frame to continually change the arc's appearance
   noiseOffset += 0.01;
 }
