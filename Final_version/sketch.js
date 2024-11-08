@@ -401,46 +401,28 @@ function drawGradient() {
 // function for structure
 
 function generateRandomEllipses(points) {
-  // Loop through each point in the array
+  let time = frameCount * 0.1; // 时间变量，用于动态效果
   for (let i = 0; i < points.length; i++) {
-    // Extract the x and y coordinates of the current point
     let x = points[i][0];
     let y = points[i][1];
 
-    // Generate random width (w) and height (h) for the ellipse
-    let w = random(15, 20);
-    let h = random(15, 20);
+    // 添加时间因素到噪声输入中
+    let w = map(noise(x * 0.05, y * 0.05, time), 0, 1, 10, 25);
+    let h = map(noise(x * 0.05 + 100, y * 0.05 + 100, time + 100), 0, 1, 10, 25);
+    let angle = map(noise(x * 0.05 + 200, y * 0.05 + 200, time + 200), 0, 1, -PI / 9, PI / 9);
 
-    // Generate a random angle for rotating the ellipse
-    let angle = random(-PI / 9, PI / 9);
-
-    // Save the current drawing state before applying transformations
     push();
-    
-    // Move the drawing origin to the point (x, y)
     translate(x, y);
-
-    // Rotate the drawing context by the random angle
     rotate(angle);
 
-    // Set stroke properties (color and thickness) for the outer ellipse
-    stroke(232, 120, 15);  // Orange color
-    strokeWeight(3);  // Line thickness
-    fill(0);  // Black fill color
-
-    // Draw the outer ellipse at the translated origin
+    stroke(232, 120, 15);
+    strokeWeight(3);
+    fill(0);
     ellipse(0, 0, w, h);
 
-    // Remove the stroke for the inner ellipse
     noStroke();
-
-    // Set the fill color to white for the inner ellipse
     fill(255);
-
-    // Draw a smaller inner ellipse inside the outer one, with a third of its width and height
     ellipse(0, 0, w / 3, h / 3);
-
-    // Restore the previous drawing state to remove transformations for the next iteration
     pop();
   }
 }
