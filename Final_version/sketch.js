@@ -9,35 +9,6 @@ const points = [
   ];
 
 // Class for circles with dot
-// class DotCircle {
-//   constructor(x, y, outerDiameter, innerDiameter, numCircles, dotColor, fillColor) {
-//     this.x = x; // X-coordinate for the center of the circle
-//     this.y = y; // Y-coordinate for the center of the circle
-//     this.outerDiameter = outerDiameter; // Diameter of the outermost circle
-//     this.innerDiameter = innerDiameter; // Diameter of the innermost circle
-//     this.numCircles = numCircles; // Number of concentric circles
-//     this.dotColor = dotColor; // Color for the dots on each circle
-//     this.fillColor = fillColor; // Fill color for the main circle
-
-//     // Calculate the step size to scale down each circle diameter
-//     this.diameterStep = (outerDiameter - innerDiameter) / (numCircles - 1);
-    
-//   }
-
-//   display() {
-//     // Draw the filled main circle in the background
-//     noStroke(); // No border for the filled circle
-//     fill(this.fillColor); // Set fill color for the main circle
-//     circle(this.x, this.y, this.outerDiameter); // Draw the main circle with full diameter
-
-//     // Draw each concentric circle with dashed style
-//     for (let i = 0; i < this.numCircles; i++) {
-//       // Calculate the current diameter based on the step size
-//       let currentDiameter = (this.outerDiameter - 4) - i * this.diameterStep;
-//       // Call the function to draw a dashed circle at this diameter
-//       this.drawDashedCircle(this.x, this.y, currentDiameter, 6, this.dotColor, 2); 
-//     }
-//   }
 
 class DotCircle {
   constructor(x, y, baseOuterDiameter, innerDiameter, numCircles, dotColor, fillColor) {
@@ -352,7 +323,7 @@ function setup() {
   // The 'circleParams' object contains configurations for different circle types
   // The 'circleClasses' object maps circle types to their respective class constructors
   createCircles(circleParams, circleClasses);
-  connectPoints(points, 108);
+  
   
   // Structure to hold points for connecting and generating shapes
   // connectPoints will draw lines or shapes between specified points
@@ -366,7 +337,7 @@ function draw() {
     circles[i].display();
   }
   
-  
+  connectPoints(points, 108);
   
   
   // Generate and draw random ellipses at the specified points
@@ -508,37 +479,49 @@ function calculateAngle(x1, y1, x2, y2) {
 function drawConnection(start, end, distance) {
   // Calculate the angle between the start and end points using the 'calculateAngle' function
   const angle = calculateAngle(...start, ...end);
-  
+
   // Calculate the X-axis radius for the ellipses based on the distance, adjusting it to fit
   let radiusX = (distance - 12) / 6;
-  
-  // Define a fixed Y-axis radius for the ellipses
-  let radiusY = 3;
+
+  // Calculate the Y-axis radius using noise function for dynamic "breathing" effect
+  let time = frameCount * 0.05;  // 控制变化的速度
+  let radiusY = 2 + noise(time) * 5;  // 使radiusY在3到8之间动态变化
 
   // Save the current drawing state
   push();
-  
+
   // Translate the drawing origin to the starting point's coordinates
   translate(start[0], start[1]);
-  
+
   // Rotate the drawing context based on the calculated angle (convert angle to radians)
   rotate(radians(angle));
-  
+
   // Loop to create 3 ellipses along the line between the start and end points
   for (let i = 0; i < 3; i++) {
-    // Draw an ellipse at an offset along the line, using the calculated radii for X and Y
+    // Draw an ellipse at an offset along the line, using the dynamically adjusted radii for X and Y
     createEllipse((12 + 6 + 2 * radiusX * i), 0, radiusX, radiusY);
   }
-  
+
   // Restore the previous drawing state to avoid affecting other parts of the canvas
   pop();
 }
 
 
 function createEllipse(xPos, yPos, radiusX, radiusY) {
-  fill(random(255), random(255), random(255));
+  // 使用frameCount来使噪声值随时间变化，增加动态效果
+  let time = frameCount * 0.1;  // 调整时间缩放来控制变化速度
+
+  // 生成基于时间和位置的噪声值，并将其直接映射到颜色范围内
+  let r = noise(xPos * 0.05 + time, yPos * 0.05) * 255; // 红色通道
+  let g = noise(xPos * 0.05, yPos * 0.05 + time) * 255; // 绿色通道
+  let b = noise(xPos * 0.05 + time * 0.5, yPos * 0.05 + time * 0.5) * 255; // 蓝色通道
+
+  // 使用噪声值来设置填充色
+  fill(r, g, b);
   stroke('orange');
   strokeWeight(2);
+
+  // 绘制椭圆
   ellipse(xPos, yPos, radiusX * 2, radiusY * 2);
 }
 
