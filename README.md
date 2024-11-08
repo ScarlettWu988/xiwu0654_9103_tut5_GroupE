@@ -1,5 +1,5 @@
 # xiwu0654_9103_tut5_GroupE
-**Name:** Scarlet Wu **StudentID:** 530634487
+**Name:** Scarlet Wu    **StudentID:** 530634487
 
 ## I chose Perlin noise to drive my code. 
 
